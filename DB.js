@@ -2,9 +2,10 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 
 // Replace with your connection string and collection name
-const uri =
-  "mongodb+srv://sinthiaahmed904:p%+chvYZ4+tC_$2@cluster0.nyc5ntk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const collectionName = "job_postings";
+// const uri =  "mongodb+srv://sinthiaahmed904:p%+chvYZ4+tC_$2@cluster0.nyc5ntk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  const uri = "mongodb+srv://kimeyaorin2:pv63bjYCVfb6ct2m@cluster0.nyc5ntk.mongodb.net/?retryWrites=true&w=majority";
+  
+  const collectionName = "job_postings";
 
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
