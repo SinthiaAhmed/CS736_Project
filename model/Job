@@ -1,0 +1,12 @@
+const jobSchema = new mongoose.Schema({
+  company: String,
+  employmenttype_jobstatus: String,
+  jobdescription: String,
+  joblocation_address: String,
+  city: String,
+  state: String,
+  jobtitle: String,
+  department: String,
+  skills: [String],
+  uniq_id: String
+});
