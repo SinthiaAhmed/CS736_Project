@@ -10,25 +10,47 @@ app.use(cors());
 require("./mongoConnect");
 
 // Define routes
-/*app.get("/jobs", async (req, res) => {
+app.get("/jobs", async (req, res) => {
   try {
     const jobs = await Job.find();
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-});*/
-
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
 });
 
+// Endpoint to fetch unique department names
 app.get("/departments", async (req, res) => {
   try {
-    const departments = await Job.aggregate([
-      { $group: { _id: "$department", count: { $sum: 1 } } },
-    ]);
+    const departments = await Job.distinct("department");
     res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Endpoint to fetch unique employment types
+app.get("/employmenttypes", async (req, res) => {
+  try {
+    const employmentTypes = await Job.distinct("employmenttype_jobstatus");
+    res.json(employmentTypes);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Endpoint to fetch unique skills
+app.get("/skills", async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    const skills = Array.from(
+      new Set(
+        jobs
+          .map((job) => job.skills.split(",").map((skill) => skill.trim()))
+          .flat()
+      )
+    );
+    res.json(skills);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

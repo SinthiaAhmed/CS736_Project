@@ -3,6 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      svg {
+        margin-top: 20px;
+      }
+
+      select {
+        margin-top: 10px;
+      }
+
       path {
         fill: #fff;
         stroke: #000;
@@ -13,9 +27,31 @@
         text-anchor: middle;
         alignment-baseline: central;
       }
+
+      .filters {
+        display: flex;
+        justify-content: space-between;
+        width: 960px;
+      }
     </style>
   </head>
   <body>
+    <!-- Filters Section -->
+    <div class="filters">
+      <select id="departments">
+        <option disabled selected>Select Department</option>
+      </select>
+      <select id="employmentTypes">
+        <option disabled selected>Select Employment Type</option>
+      </select>
+      <select id="skills">
+        <option disabled selected>Select Skill</option>
+      </select>
+    </div>
+
+    <!-- Map Section -->
+    <svg width="960" height="600"></svg>
+
     <!-- Step 1. Load D3 and topoJSON libraries -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
@@ -26,21 +62,13 @@
         const data = topojson.feature(us, us.objects.states).features;
 
         // Step 3. Draw the SVG.
-        // First let's create an empty SVG with 960px width and 600px height.
-        const width = 2000;
-        const height = 1640;
-        const svg = d3
-          .select("body")
-          .append("svg")
-          .attr("width", width)
-          .attr("height", height);
+        const svg = d3.select("svg");
 
         // Create an instance of geoPath.
         const path = d3.geoPath();
 
         // Use the path to plot the US map based on the geometry data.
         svg
-          .append("g")
           .selectAll("path")
           .data(data)
           .enter()
@@ -57,6 +85,37 @@
           .attr("x", (d) => path.centroid(d)[0])
           .attr("y", (d) => path.centroid(d)[1])
           .text((d) => d.properties.name.substring(0, 2));
+
+        // Step 4. Add filters
+        const departments = await d3.json("http://localhost:3000/departments");
+        const employmentTypes = await d3.json(
+          "http://localhost:3000/employmenttypes"
+        );
+        const skills = await d3.json("http://localhost:3000/skills");
+
+        d3.select("#departments")
+          .selectAll("option")
+          .data(departments)
+          .enter()
+          .append("option")
+          .attr("value", (d) => d)
+          .text((d) => d);
+
+        d3.select("#employmentTypes")
+          .selectAll("option")
+          .data(employmentTypes.filter((d) => d !== "Select Employment Type"))
+          .enter()
+          .append("option")
+          .attr("value", (d) => d)
+          .text((d) => d);
+
+        d3.select("#skills")
+          .selectAll("option")
+          .data(skills.filter((d) => d !== "Select Skill"))
+          .enter()
+          .append("option")
+          .attr("value", (d) => d)
+          .text((d) => d);
       })();
     </script>
   </body>
