@@ -1,0 +1,30 @@
+d3.select("#map-container")
+            .append("select")
+            .attr("id", "department-filter")
+            .selectAll("option")
+            .data(departments)
+            .enter()
+            .append("option")
+            .attr("value", (d) => d)
+            .text((d) => d);
+
+
+            d3.select("#map-container")
+            .append("select")
+            .attr("id", "employmenttype-filter")
+            .selectAll("option")
+            .data(employmentTypes)
+            .enter()
+            .append("option")
+            .attr("value", (d) => d)
+            .text((d) => d);
+
+            d3.select("#map-container")
+            .append("select")
+            .attr("id", "skills-filter")
+            .selectAll("option")
+            .data(skills)
+            .enter()
+            .append("option")
+            .attr("value", (d) => d)
+            .text((d) => d);

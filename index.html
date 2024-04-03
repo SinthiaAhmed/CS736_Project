@@ -4,17 +4,29 @@
     <meta charset="utf-8" />
     <style>
       body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
         align-items: center;
       }
 
-      svg {
-        margin-top: 20px;
+      .filters {
+        width: 100%;
+        background-color: #f8f8f8;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
       }
 
-      select {
-        margin-top: 10px;
+      #map {
+        width: 960px;
+        height: 600px;
+        margin-top: 20px;
+        position: relative;
       }
 
       path {
@@ -27,30 +39,21 @@
         text-anchor: middle;
         alignment-baseline: central;
       }
-
-      .filters {
-        display: flex;
-        justify-content: space-between;
-        width: 960px;
-      }
     </style>
   </head>
   <body>
-    <!-- Filters Section -->
     <div class="filters">
-      <select id="departments">
-        <option disabled selected>Select Department</option>
-      </select>
-      <select id="employmentTypes">
-        <option disabled selected>Select Employment Type</option>
-      </select>
-      <select id="skills">
-        <option disabled selected>Select Skill</option>
-      </select>
+      <label for="department">Department:</label>
+      <select id="department"></select>
+
+      <label for="employmentType">Employment Type:</label>
+      <select id="employmentType"></select>
+
+      <label for="skill">Skill:</label>
+      <select id="skill"></select>
     </div>
 
-    <!-- Map Section -->
-    <svg width="960" height="600"></svg>
+    <div id="map"></div>
 
     <!-- Step 1. Load D3 and topoJSON libraries -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -62,13 +65,21 @@
         const data = topojson.feature(us, us.objects.states).features;
 
         // Step 3. Draw the SVG.
-        const svg = d3.select("svg");
+        // First let's create an empty SVG with 960px width and 600px height.
+        const width = 960;
+        const height = 600;
+        const svg = d3
+          .select("#map")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
 
         // Create an instance of geoPath.
         const path = d3.geoPath();
 
         // Use the path to plot the US map based on the geometry data.
         svg
+          .append("g")
           .selectAll("path")
           .data(data)
           .enter()
@@ -86,32 +97,49 @@
           .attr("y", (d) => path.centroid(d)[1])
           .text((d) => d.properties.name.substring(0, 2));
 
-        // Step 4. Add filters
+        // Step 4. Add filters for department, employment type, and skill
         const departments = await d3.json("http://localhost:3000/departments");
         const employmentTypes = await d3.json(
           "http://localhost:3000/employmenttypes"
         );
         const skills = await d3.json("http://localhost:3000/skills");
 
-        d3.select("#departments")
-          .selectAll("option")
+        d3.select("#department")
+          .append("option")
+          .attr("value", "")
+          .text("Select");
+
+        // Append department options
+        d3.select("#department")
+          .selectAll("option:not(:first-child)")
           .data(departments)
           .enter()
           .append("option")
           .attr("value", (d) => d)
           .text((d) => d);
 
-        d3.select("#employmentTypes")
-          .selectAll("option")
-          .data(employmentTypes.filter((d) => d !== "Select Employment Type"))
+        // Add an empty option as the default (not selected) state
+        d3.select("#employmentType")
+          .append("option")
+          .attr("value", "")
+          .text("Select");
+
+        // Append employment type options
+        d3.select("#employmentType")
+          .selectAll("option:not(:first-child)")
+          .data(employmentTypes)
           .enter()
           .append("option")
           .attr("value", (d) => d)
           .text((d) => d);
 
-        d3.select("#skills")
-          .selectAll("option")
-          .data(skills.filter((d) => d !== "Select Skill"))
+        // Add an empty option as the default (not selected) state
+        d3.select("#skill").append("option").attr("value", "").text("Select");
+
+        // Append skill options
+        d3.select("#skill")
+          .selectAll("option:not(:first-child)")
+          .data(skills)
           .enter()
           .append("option")
           .attr("value", (d) => d)
