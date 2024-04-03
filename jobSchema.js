@@ -11,6 +11,7 @@ const jobSchema = new mongoose.Schema({
   department: String,
   skills: String,
   uniq_id: String,
+  count: Number, // Add this field
 });
 
 const Job = mongoose.model("Job", jobSchema);
