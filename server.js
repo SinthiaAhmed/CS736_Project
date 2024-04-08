@@ -39,23 +39,6 @@ app.get("/employmenttypes", async (req, res) => {
   }
 });
 
-// Endpoint to fetch unique skills
-app.get("/skills", async (req, res) => {
-  try {
-    const jobs = await Job.find();
-    const skills = Array.from(
-      new Set(
-        jobs
-          .map((job) => job.skills.split(",").map((skill) => skill.trim()))
-          .flat()
-      )
-    );
-    res.json(skills);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
