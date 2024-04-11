@@ -128,6 +128,48 @@
           .append("option")
           .attr("value", (d) => d)
           .text((d) => d);
+
+        const jobsData = await d3.json(
+          "http://localhost:3000/jobs/groupedEmploymentType"
+        );
+
+        const stateCircles = svg
+          .selectAll("circle")
+          .data(jobsData)
+          .enter()
+          .append("circle")
+          .attr(
+            "cx",
+            (d) =>
+              path.centroid(
+                data.find(
+                  (state) =>
+                    state.properties.name.replace(/\s/g, "") === d._id.state
+                )
+              )[0]
+          ) // Find state centroid based on abbreviation
+          .attr(
+            "cy",
+            (d) =>
+              path.centroid(
+                data.find(
+                  (state) =>
+                    state.properties.name.replace(/\s/g, "") === d._id.state
+                )
+              )[1]
+          ) // Find state centroid based on abbreviation
+          .attr("r", (d) => Math.sqrt(d.count) * 2) // Adjust circle size based on count (square root for balance)
+          .attr("fill", (d) => {
+            // You can define colors for different employment types here
+            return "steelblue"; // Example color
+          })
+          .attr("opacity", 0.7)
+          .on("mouseover", function (d) {
+            // Add hover behavior to display tooltip with details (optional)
+          })
+          .on("mouseout", function (d) {
+            // Remove tooltip on mouseout (optional)
+          });
       })();
     </script>
   </body>
