@@ -52,7 +52,6 @@ app.get("/jobs/groupedEmploymentType", async (req, res) => {
       },
     ]);
     res.json(jobsData);
-    console.log(res);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
