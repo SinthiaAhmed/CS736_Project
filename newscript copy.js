@@ -37,6 +37,7 @@
 
     // Step 3. Add filters for department, employment type, and skill
     const departments = await d3.json("http://localhost:3000/departments");
+    const employmentTypes = await d3.json("http://localhost:3000/employmenttypes");
 
     // Append options to department dropdown
     const departmentDropdown = d3.select("#departmentDropdown");
@@ -50,20 +51,18 @@
         .attr("value", (d) => d)
         .text((d) => d);
 
-    // Initially load all employment types
-    const allEmploymentTypes = await d3.json("http://localhost:3000/employmenttypes");
-
     // Append options to employment type dropdown
     const employmentTypeDropdown = d3.select("#employmentTypeDropdown");
     employmentTypeDropdown.append("option")
         .attr("value", "")
         .text("All"); // Set initial option to "All"
     employmentTypeDropdown.selectAll("option:not(:first-child)")
-        .data(allEmploymentTypes)
+        .data(employmentTypes)
         .enter()
         .append("option")
         .attr("value", (d) => d)
         .text((d) => d);
+
 
     // Step 4. Populating circles based on the count of employment type in each state
     const updateMap = async () => {
@@ -71,20 +70,10 @@
         const selectedEmploymentType = employmentTypeDropdown.property("value") || "All"; // Set default value to "All"
         console.log("selectedDepartment", selectedDepartment);
         console.log("selectedEmploymentType", selectedEmploymentType);
-        
-        // Fetch data based on selected department
-        let jobsData;
-        if (selectedDepartment === "All") {
-            jobsData = await d3.json(`http://localhost:3000/jobs/groupedDepartments`);
-        } else {
-            jobsData = await d3.json(`http://localhost:3000/jobs/groupedDepartments?department=${selectedDepartment}`);
-        }
+        const jobsData = await d3.json(`http://localhost:3000/jobs/groupedEmploymentType?department=${selectedDepartment}&type=${selectedEmploymentType}`);
 
         // Remove existing circles
         svg.selectAll(".bubble").remove();
-
-        // Filter stateData based on selected employment type
-        let filteredJobsData = jobsData.filter((job) => job.employmentType === selectedEmploymentType || selectedEmploymentType === "All");
 
         // Iterate through each state
         svg.append("g")
@@ -95,7 +84,7 @@
             .selectAll("circle") // Nest selection for each state
             .data((d) => {
                 // Find the corresponding data points for the current state based on state abbreviation
-                const stateData = filteredJobsData.filter((job) => job.state === d.properties.name.substring(0, 2).toUpperCase());
+                const stateData = jobsData.filter((job) => job.state === d.properties.name.substring(0, 2).toUpperCase());
                 console.log("stateData", stateData);
                 return stateData.map((employmentType) => ({ state: d, employmentType: employmentType }));
             })
@@ -111,29 +100,13 @@
             .style("fill", "steelblue") // You can set different colors for each employment type
             .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
     };
-    
+
+    // Set initial values to "All" for both dropdowns
+    departmentDropdown.property("value", "");
+    employmentTypeDropdown.property("value", "");
+
     // Bind change event listeners to department and employment type dropdowns
-    departmentDropdown.on("change", async () => {
-        const selectedDepartment = departmentDropdown.property("value") || "All";
-        const newEmploymentTypes = await d3.json(`http://localhost:3000/employmenttypes?department=${selectedDepartment}`);
-        
-        // Update employment type dropdown options based on the selected department
-        employmentTypeDropdown.selectAll("option")
-            .remove();
-        employmentTypeDropdown.append("option")
-            .attr("value", "")
-            .text("All");
-        employmentTypeDropdown.selectAll("option:not(:first-child)")
-            .data(newEmploymentTypes)
-            .enter()
-            .append("option")
-            .attr("value", (d) => d)
-            .text((d) => d);
-        
-        // Update the map
-        updateMap();
-    });
-    
+    departmentDropdown.on("change", updateMap);
     employmentTypeDropdown.on("change", updateMap);
 
     // Initially load map with "All" selected
