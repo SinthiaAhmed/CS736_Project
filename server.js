@@ -34,7 +34,8 @@ app.get("/departments", async (req, res) => {
 app.get("/employmenttypes", async (req, res) => {
   try {
     const employmentTypes = await Job.distinct("employmenttype_jobstatus");
-    res.json(employmentTypes);
+    const formattedTypes = employmentTypes.map(type => type.replace(/\s+/g, '_'));
+    res.json(formattedTypes);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -64,7 +65,9 @@ app.get("/jobs/groupedEmploymentType", async (req, res) => {
           _id: 0, // Exclude the default _id field
           id: "$_id.id",
           state: 1,
-          employmentType: 1,
+          employmentType: {
+            $replaceAll: { input: "$_id.employmentType", find: " ", replacement: "_" }
+          },
           count: 1
         }
       }
