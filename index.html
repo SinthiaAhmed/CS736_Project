@@ -129,46 +129,30 @@
           .attr("value", (d) => d)
           .text((d) => d);
 
+        // Step 5. Populating circles based on the count of employement type in each state
         const jobsData = await d3.json(
           "http://localhost:3000/jobs/groupedEmploymentType"
         );
 
-        const stateCircles = svg
+        svg
+          .append("g")
+          .attr("class", "bubble")
           .selectAll("circle")
-          .data(jobsData)
+          .data(topojson.feature(us, us.objects.counties).features)
           .enter()
           .append("circle")
-          .attr(
-            "cx",
-            (d) =>
-              path.centroid(
-                data.find(
-                  (state) =>
-                    state.properties.name.replace(/\s/g, "") === d._id.state
-                )
-              )[0]
-          ) // Find state centroid based on abbreviation
-          .attr(
-            "cy",
-            (d) =>
-              path.centroid(
-                data.find(
-                  (state) =>
-                    state.properties.name.replace(/\s/g, "") === d._id.state
-                )
-              )[1]
-          ) // Find state centroid based on abbreviation
-          .attr("r", (d) => Math.sqrt(d.count) * 2) // Adjust circle size based on count (square root for balance)
-          .attr("fill", (d) => {
-            // You can define colors for different employment types here
-            return "steelblue"; // Example color
+          .attr("transform", function (d) {
+            return "translate(" + path.centroid(d) + ")";
           })
-          .attr("opacity", 0.7)
-          .on("mouseover", function (d) {
-            // Add hover behavior to display tooltip with details (optional)
-          })
-          .on("mouseout", function (d) {
-            // Remove tooltip on mouseout (optional)
+          //.attr("r", 1.5);
+          .attr("r", (d) => {
+            // Find the corresponding data point for the current county based on state abbreviation
+            const stateData = jobsData.find(
+              (job) => job._id.state === d.properties.name.replace(/\s/g, "")
+            );
+
+            // Use square root of count for balanced radius
+            return stateData ? Math.sqrt(stateData.count) * 2 : 0; // Set radius to 0 if no data for the county
           });
       })();
     </script>
