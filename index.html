@@ -1,176 +1,132 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
 
-      .filters {
-        width: 100%;
-        background-color: #f8f8f8;
-        padding: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-      }
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/style.css">
+</head>
 
-      #map {
-        width: 960px;
-        height: 600px;
-        margin-top: 20px;
-        position: relative;
-      }
+<body>
+  <div class="filters">
+    <label for="department">Department:</label>
+    <select id="department"></select>
 
-      path {
-        fill: #fff;
-        stroke: #000;
-      }
+    <label for="employmentType">Employment Type:</label>
+    <select id="employmentType"></select>
+  </div>
 
-      text {
-        font-size: 10px;
-        text-anchor: middle;
-        alignment-baseline: central;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="filters">
-      <label for="department">Department:</label>
-      <select id="department"></select>
+  <div id="map"></div>
 
-      <label for="employmentType">Employment Type:</label>
-      <select id="employmentType"></select>
-    </div>
+  <!-- Step 1. Load D3 and topoJSON libraries -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <script>
+    (async () => {
+      // Step 2. Load the US map data.
+      const us = await d3.json("https://d3js.org/us-10m.v2.json");
+      const data = topojson.feature(us, us.objects.states).features;
 
-    <div id="map"></div>
+      // Step 3. Draw the SVG.
+      // First let's create an empty SVG with 960px width and 600px height.
+      const width = 960;
+      const height = 600;
+      const svg = d3
+        .select("#map")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-    <!-- Step 1. Load D3 and topoJSON libraries -->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://d3js.org/topojson.v3.min.js"></script>
-    <script>
-      (async () => {
-        // Step 2. Load the US map data.
-        const us = await d3.json("https://d3js.org/us-10m.v2.json");
-        const data = topojson.feature(us, us.objects.states).features;
+      // Create an instance of geoPath.
+      const path = d3.geoPath();
 
-        // Step 3. Draw the SVG.
-        // First let's create an empty SVG with 960px width and 600px height.
-        const width = 960;
-        const height = 600;
-        const svg = d3
-          .select("#map")
-          .append("svg")
-          .attr("width", width)
-          .attr("height", height);
+      // Use the path to plot the US map based on the geometry data.
+      svg
+        .append("g")
+        .selectAll("path")
+        .data(data)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .attr("id", (d) => d.properties.name.replace(/\s/g, ""));
 
-        // Create an instance of geoPath.
-        const path = d3.geoPath();
+      // Add text for state initials
+      svg
+        .selectAll("text")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("x", (d) => path.centroid(d)[0])
+        .attr("y", (d) => path.centroid(d)[1])
+        .text((d) => d.properties.name.substring(0, 2));
 
-        // Use the path to plot the US map based on the geometry data.
-        svg
-          .append("g")
-          .selectAll("path")
-          .data(data)
-          .enter()
-          .append("path")
-          .attr("d", path)
-          .attr("id", (d) => d.properties.name.replace(/\s/g, ""));
+      // Step 4. Add filters for department, employment type, and skill
+      const departments = await d3.json("http://localhost:3000/departments");
+      const employmentTypes = await d3.json(
+        "http://localhost:3000/employmenttypes"
+      );
 
-        // Add text for state initials
-        svg
-          .selectAll("text")
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("x", (d) => path.centroid(d)[0])
-          .attr("y", (d) => path.centroid(d)[1])
-          .text((d) => d.properties.name.substring(0, 2));
+      d3.select("#department")
+        .append("option")
+        .attr("value", "")
+        .text("Select");
 
-        // Step 4. Add filters for department, employment type, and skill
-        const departments = await d3.json("http://localhost:3000/departments");
-        const employmentTypes = await d3.json(
-          "http://localhost:3000/employmenttypes"
-        );
+      // Append department options
+      d3.select("#department")
+        .selectAll("option:not(:first-child)")
+        .data(departments)
+        .enter()
+        .append("option")
+        .attr("value", (d) => d)
+        .text((d) => d);
 
-        d3.select("#department")
-          .append("option")
-          .attr("value", "")
-          .text("Select");
+      // Add an empty option as the default (not selected) state
+      d3.select("#employmentType")
+        .append("option")
+        .attr("value", "")
+        .text("Select");
 
-        // Append department options
-        d3.select("#department")
-          .selectAll("option:not(:first-child)")
-          .data(departments)
-          .enter()
-          .append("option")
-          .attr("value", (d) => d)
-          .text((d) => d);
+      // Append employment type options
+      d3.select("#employmentType")
+        .selectAll("option:not(:first-child)")
+        .data(employmentTypes)
+        .enter()
+        .append("option")
+        .attr("value", (d) => d)
+        .text((d) => d);
 
-        // Add an empty option as the default (not selected) state
-        d3.select("#employmentType")
-          .append("option")
-          .attr("value", "")
-          .text("Select");
+      const jobsData = await d3.json(
+        "http://localhost:3000/jobs/groupedEmploymentType"
+      );
 
-        // Append employment type options
-        d3.select("#employmentType")
-          .selectAll("option:not(:first-child)")
-          .data(employmentTypes)
-          .enter()
-          .append("option")
-          .attr("value", (d) => d)
-          .text((d) => d);
+      const stateCircles = svg
+        .selectAll("circle")
+        .data(jobsData)
+        .enter()
+        .append("circle")
+        .attr("cx", (d) => {
+          const state = data.find((state) => state.properties.name.replace(/\s/g, "") === d._id.state);
+          const centroid = path.centroid(state);
+          console.log("centroid x:", centroid[0]);
+          return centroid ? centroid[0] : 0; // Check if centroid is valid, otherwise default to 0
+        })
+        .attr("cy", (d) => {
+          const state = data.find((state) => state.properties.name.replace(/\s/g, "") === d._id.state);
+          const centroid = path.centroid(state);
+          console.log("centroid y:", centroid[1]);
+          return centroid ? centroid[1] : 0; // Check if centroid is valid, otherwise default to 0
+        })
+        .attr("r", (d) => Math.sqrt(d.count) * 2)
+        .attr("fill", "steelblue")
+        .attr("opacity", 0.7)
+        .on("mouseover", function (d) {
+          // Add hover behavior to display tooltip with details (optional)
+        })
+        .on("mouseout", function (d) {
+          // Remove tooltip on mouseout (optional)
+        });
 
-        const jobsData = await d3.json(
-          "http://localhost:3000/jobs/groupedEmploymentType"
-        );
+    })();
+  </script>
+</body>
 
-        const stateCircles = svg
-          .selectAll("circle")
-          .data(jobsData)
-          .enter()
-          .append("circle")
-          .attr(
-            "cx",
-            (d) =>
-              path.centroid(
-                data.find(
-                  (state) =>
-                    state.properties.name.replace(/\s/g, "") === d._id.state
-                )
-              )[0]
-          ) // Find state centroid based on abbreviation
-          .attr(
-            "cy",
-            (d) =>
-              path.centroid(
-                data.find(
-                  (state) =>
-                    state.properties.name.replace(/\s/g, "") === d._id.state
-                )
-              )[1]
-          ) // Find state centroid based on abbreviation
-          .attr("r", (d) => Math.sqrt(d.count) * 2) // Adjust circle size based on count (square root for balance)
-          .attr("fill", (d) => {
-            // You can define colors for different employment types here
-            return "steelblue"; // Example color
-          })
-          .attr("opacity", 0.7)
-          .on("mouseover", function (d) {
-            // Add hover behavior to display tooltip with details (optional)
-          })
-          .on("mouseout", function (d) {
-            // Remove tooltip on mouseout (optional)
-          });
-      })();
-    </script>
-  </body>
 </html>
