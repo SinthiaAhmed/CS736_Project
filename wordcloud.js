@@ -6,11 +6,11 @@ async function generateWordCloud(mostCommonSkills) {
 
     const maxCount = Math.max(...mostCommonSkills.map(d => d.count));
 
-    const fontSizeFactor = 20; // Adjust to change font size
+    const fontSizeFactor = 40; // Adjust to change font size
     const fontFamily = 'Arial'; // Change font family if needed
 
     canvas.width = 400;
-    canvas.height = 400;
+    canvas.height = 1400;
 
     let currentX = 0;
     let currentY = 0;
@@ -25,11 +25,11 @@ async function generateWordCloud(mostCommonSkills) {
 
             if (currentX + textWidth > canvas.width) {
                 currentX = 0;
-                currentY += fontSize + 5; // Adjust vertical spacing
+                currentY += fontSize + 15; // Adjust vertical spacing
             }
 
             ctx.fillText(word, currentX, currentY);
-            currentX += textWidth + 10; // Adjust horizontal spacing
+            currentX += textWidth + 20; // Adjust horizontal spacing
         });
     })
 }
