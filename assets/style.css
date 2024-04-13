@@ -13,6 +13,10 @@ body::before {
   background-size: 50px 50px;
   z-index: -1;
 }
+.white-background{
+  background-color: #fff;
+
+}
 #map-container {
   position: relative;
   z-index: 1; /* Ensure the map container is above the gridlines */
