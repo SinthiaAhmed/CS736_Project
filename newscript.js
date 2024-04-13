@@ -98,7 +98,7 @@
                 filteredJobsData = jobsData.filter(job => job.employmentType === selectedEmploymentType);
             }
         }
-        console.log("filteredJobsData", filteredJobsData);
+        // console.log("filteredJobsData", filteredJobsData);
 
         const colorScale = d3.scaleOrdinal()
             .domain(departments) // Use the list of departments as the domain for the color scale
@@ -112,9 +112,11 @@
             .enter()
             .selectAll("circle") // Nest selection for each state
             .data((d) => {
+                console.log(d.properties.name, d.properties.name.substring(0, 2).toUpperCase());
                 // Find the corresponding data points for the current state based on state abbreviation
                 const stateData = filteredJobsData.filter((job) => job.state === d.properties.name.substring(0, 2).toUpperCase());
-                console.log("stateData", stateData);
+                
+                // console.log("stateData", stateData);
                 return stateData.map((employmentType) => ({ state: d, employmentType: employmentType }));
             })
             .enter()
