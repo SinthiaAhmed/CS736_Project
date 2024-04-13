@@ -1,4 +1,27 @@
+body{
+  background-color: #9FBEC0;
+}
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1;
+}
+.white-background{
+  background-color: #fff;
 
+}
+#map-container {
+  position: relative;
+  z-index: 1; /* Ensure the map container is above the gridlines */
+  /* Add any additional styles for your map container */
+}
 .filters {
   width: 100%;
   background-color: #f8f8f8;

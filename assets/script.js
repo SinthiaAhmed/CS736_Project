@@ -79,7 +79,7 @@
         .append("path")
         .attr("d", path)
         .attr("id", (d) => d.properties.name.replace(/\s/g, ""))
-        .style("fill", "lightgray")
+        .style("fill", "cornsilk")
         .style("stroke", "darkgray") // Border color
         .style("stroke-width", 1); // Border width;
 
@@ -222,9 +222,8 @@
                     <hr>
         `;
                 // Example of how to use the function
-
-                // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
-                const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
+                // console.log("Print", jobData.department.replace(/\s|&/g, ""));
+               const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostcommonskills`);
                 // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
 
                 departmentSkillsData.forEach(department => {

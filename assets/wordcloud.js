@@ -6,7 +6,7 @@ async function generateWordCloud(mostCommonSkills) {
 
     const maxCount = Math.max(...mostCommonSkills.map(d => d.count));
 
-    const fontSizeFactor = 40; // Adjust to change font size
+    const fontSizeFactor = 30; // Adjust to change font size
     const fontFamily = 'Arial'; // Change font family if needed
 
     canvas.width = 400;
