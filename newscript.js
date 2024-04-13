@@ -190,6 +190,7 @@
             })
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5) // Set opacity to distinguish overlapping bubbles
+            .style("cursor", "pointer") // Change cursor to pointer on hover
             .on("click", (d, event ) => {
                 console.log(d);
                 // Handle click event on circles
