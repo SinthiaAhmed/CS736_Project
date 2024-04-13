@@ -157,6 +157,7 @@ app.get("/departments/skills", async (req, res) => {
   // .replace(/\s|&/g, "")
 // Endpoint to fetch the most common skills for each department
 app.get("/departments/mostcommonskills", async (req, res) => {
+  console.log("req", req);
   try {
     const skillsData = await Job.aggregate([
       {
