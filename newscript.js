@@ -23,7 +23,7 @@
         .attr("d", path)
         .attr("id", (d) => d.properties.name.replace(/\s/g, ""))
         .style("fill", "lightgray")
-        .style("stroke", "black") // Border color
+        .style("stroke", "darkgray") // Border color
         .style("stroke-width", 1); // Border width;
 
     // Add text for state initials
