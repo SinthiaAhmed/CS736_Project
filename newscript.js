@@ -86,14 +86,14 @@
         } else if (selectedEmploymentType === "All") {
             // If only employment type is "All", filter by department
             if (selectedDepartment !== "All") {
-                filteredJobsData = jobsData.filter(job => job.department.replace(/\s/g, "") === selectedDepartment);
+                filteredJobsData = jobsData.filter(job => job.department.replace(/\s|&/g, "") === selectedDepartment);
             } else {
                 filteredJobsData = jobsData;
             }
         } else {
             // If employment type is specific, filter by both department and employment type
             if (selectedDepartment !== "All") {
-                filteredJobsData = jobsData.filter(job => job.department.replace(/\s/g, "") === selectedDepartment && job.employmentType === selectedEmploymentType);
+                filteredJobsData = jobsData.filter(job => job.department.replace(/\s|&/g, "") === selectedDepartment && job.employmentType === selectedEmploymentType);
             } else {
                 filteredJobsData = jobsData.filter(job => job.employmentType === selectedEmploymentType);
             }
