@@ -191,12 +191,12 @@
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5) // Set opacity to distinguish overlapping bubbles
             .style("cursor", "pointer") // Change cursor to pointer on hover
-            // Existing code...
 
             .on("click", async (d) => {
                 // Handle click event on circles
                 const stateName = d.state.properties.name;
                 const stateAbbreviation = stateAbbreviations[stateName];
+
 
                 // Fetch all jobs data for the clicked state
                 let stateJobsData = jobsData.filter(job => job.state === stateAbbreviation);
@@ -220,6 +220,25 @@
                     <p>Skills: ${jobData.skills}</p>
                     <hr>
         `;
+
+
+                // Example of how to use the function
+
+                // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
+                const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
+                // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
+                
+                departmentSkillsData.forEach(department => {
+                    if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
+                      // Match found, do something with department.mostCommonSkills
+                      console.log("Match found for department:",department.department.replace(/\s|&/g, ""), jobData.department.replace(/\s|&/g, ""));
+                      console.log("Most common skills:", department.mostCommonSkills);
+                    }
+                  });
+               
+                // Generate and display the word cloud
+                // generateWordCloud(departmentSkillsData);
+
             });
 
 
@@ -259,3 +278,4 @@ function toggleDescription(id) {
     const moreDescription = document.getElementById(id);
     moreDescription.style.display = moreDescription.style.display === "none" ? "inline" : "none";
 }
+

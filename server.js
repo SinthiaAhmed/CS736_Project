@@ -152,17 +152,25 @@ app.get("/departments/skills", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-// Endpoint to fetch most common skills data for each department
+
 app.get("/departments/mostCommonSkills", async (req, res) => {
+
   try {
-    const jobsData = await Job.aggregate([
+    console.log("req", req);
+    const departmentName = req.replace(/\s|&/g, ""); // Extract department name from query parameters
+
+    //  aggregation pipeline 
+    const pipeline = [
+      {
+        $match: { department: departmentName } // Match documents with the specified department
+      },
       {
         $unwind: "$skills" // Unwind the skills array
       },
       {
         $group: {
           _id: { department: "$department", skill: "$skills" }, // Group by department and skill
-          count: { $sum: 1 } // Count occurrences of each skill in each department
+          count: { $sum: 1 } // Count occurrences of each skill in the department
         }
       },
       {
@@ -181,13 +189,14 @@ app.get("/departments/mostCommonSkills", async (req, res) => {
           mostCommonSkills: { $slice: ["$mostCommonSkills", 5] } // Limit to the top 5 most common skills
         }
       }
-    ]);
+    ];
+
+    const jobsData = await Job.aggregate(pipeline);
     res.json(jobsData);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 
 
