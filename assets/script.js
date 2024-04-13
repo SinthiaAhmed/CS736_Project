@@ -216,27 +216,26 @@
                     <p>Department: ${jobData.department}</p>
                     <p>Employment Type: ${jobData.employmentType}</p>
                     <p>Position: ${jobData.jobTitle}</p>
-                    <p>Description: ${jobData.jobDescription}</p>
-                    <p>Skills: ${jobData.skills}</p>
+                    <p>Description: <span id="jobDescription">${truncateDescription(jobData.jobDescription)}</span></p>
+                    <button onclick="toggleDescription('jobDescription', { department: '${jobData.department}', employmentType: '${jobData.employmentType}', jobTitle: '${jobData.jobTitle}', jobDescription: '${jobData.jobDescription.replace(/'/g, "\\'")}', skills: '${jobData.skills}' })">View more</button>
+<p>Skills: ${jobData.skills}</p>
                     <hr>
         `;
+                // Example of how to use the function
 
+                // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
+                const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
+                // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
 
-            // Example of how to use the function
+                departmentSkillsData.forEach(department => {
+                    if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
 
-            // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
-            const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
-            // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
+                        // Match found,Generate and display the word cloud
+                        generateWordCloud(department.mostCommonSkills);
+                    }
+                });
 
-            departmentSkillsData.forEach(department => {
-                if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
-
-                    // Match found,Generate and display the word cloud
-                    generateWordCloud(department.mostCommonSkills);
-                }
             });
-
-        });
     };
 
 
@@ -268,9 +267,29 @@
     updateMap();
 
 })();
+// Function to truncate description to 100 words
+function truncateDescription(description) {
+    const words = description.split(" ");
+    if (words.length > 100) {
+        return words.slice(0, 100).join(" ") + "...";
+    } else {
+        return description;
+    }
+}
 // Function to toggle description visibility
-function toggleDescription(id) {
-    const moreDescription = document.getElementById(id);
-    moreDescription.style.display = moreDescription.style.display === "none" ? "inline" : "none";
+function toggleDescription(id, jobData) {
+    const description = document.getElementById(id);
+    const button = description.nextElementSibling;
+    if (description.dataset.fullText === "true") {
+        // Description is already expanded, truncate it
+        description.innerText = truncateDescription(description.innerText);
+        button.innerText = "View more";
+        description.dataset.fullText = "false";
+    } else {
+        // Description is truncated, show full text
+        description.innerText = jobData.jobDescription;
+        button.innerText = "View less";
+        description.dataset.fullText = "true";
+    }
 }
 
