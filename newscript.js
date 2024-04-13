@@ -222,26 +222,21 @@
         `;
 
 
-                // Example of how to use the function
+            // Example of how to use the function
 
-                // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
-                const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
-                // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
-                
-                departmentSkillsData.forEach(department => {
-                    if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
-                      // Match found, do something with department.mostCommonSkills
-                      console.log("Match found for department:",department.department.replace(/\s|&/g, ""), jobData.department.replace(/\s|&/g, ""));
-                      console.log("Most common skills:", department.mostCommonSkills);
-                    }
-                  });
-               
-                // Generate and display the word cloud
-                // generateWordCloud(departmentSkillsData);
+            // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
+            const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
+            // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
 
+            departmentSkillsData.forEach(department => {
+                if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
+
+                    // Match found,Generate and display the word cloud
+                    generateWordCloud(department.mostCommonSkills);
+                }
             });
 
-
+        });
     };
 
 
