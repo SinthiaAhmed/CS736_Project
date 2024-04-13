@@ -153,17 +153,12 @@ app.get("/departments/skills", async (req, res) => {
   }
 });
 
-app.get("/departments/mostCommonSkills", async (req, res) => {
 
+  // .replace(/\s|&/g, "")
+// Endpoint to fetch the most common skills for each department
+app.get("/departments/mostcommonskills", async (req, res) => {
   try {
-    console.log("req", req);
-    const departmentName = req.replace(/\s|&/g, ""); // Extract department name from query parameters
-
-    //  aggregation pipeline 
-    const pipeline = [
-      {
-        $match: { department: departmentName } // Match documents with the specified department
-      },
+    const skillsData = await Job.aggregate([
       {
         $unwind: "$skills" // Unwind the skills array
       },
@@ -189,14 +184,16 @@ app.get("/departments/mostCommonSkills", async (req, res) => {
           mostCommonSkills: { $slice: ["$mostCommonSkills", 5] } // Limit to the top 5 most common skills
         }
       }
-    ];
+    ]);
 
-    const jobsData = await Job.aggregate(pipeline);
-    res.json(jobsData);
+    res.json(skillsData);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+
 
 
 
