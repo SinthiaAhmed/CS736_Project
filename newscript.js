@@ -195,20 +195,37 @@
                 // Handle click event on circles
                 const stateName = d.state.properties.name;
                 const stateAbbreviation = stateAbbreviations[stateName];
-    
+
                 // Fetch all jobs data for the clicked state
-                const stateJobsData = jobsData.filter(job => job.state === stateAbbreviation);
-    
-                // Display all jobs data for the clicked state
-                const detailsContainer = document.getElementById("detailsContainer");
-                detailsContainer.innerHTML = `<h2>All Jobs in ${stateName}</h2>`;
-                stateJobsData.forEach(job => {
-                    detailsContainer.innerHTML += `
-                        <p>Department: ${job.department}</p>
-                        <p>Employment Type: ${job.employmentType}</p>
-                        <hr>
+                let stateJobsData = jobsData.filter(job => job.state === stateAbbreviation);
+                
+
+                // If both department and employment type are selected, filter jobs by both criteria
+                if (selectedDepartment !== "All" || selectedEmploymentType !== "All") {
+                    console.log("TRUE", selectedDepartment,selectedEmploymentType );
+                    
+                    stateJobsData = stateJobsData.filter(job => job.department.replace(/\s|&/g, "") === selectedDepartment && job.employmentType === selectedEmploymentType);
+                    console.log(stateJobsData); 
+                }
+
+                 // Display all jobs data for the clicked state
+            const detailsContainer = document.getElementById("detailsContainer");
+            detailsContainer.innerHTML = `<h2>All Jobs in ${stateName}</h2>`;
+            stateJobsData.forEach(job => {
+                const truncatedDescription = job.jobDescription.split(/\s+/).slice(0, 100).join(" "); // Truncate description to 100 words
+                const moreDescription = job.jobDescription.split(/\s+/).slice(100).join(" "); // Get remaining description
+
+                // Create HTML content with truncated description and "View More" button
+                detailsContainer.innerHTML += `
+                    <p>Department: ${job.department}</p>
+                    <p>Employment Type: ${job.employmentType}</p>
+                    <p>Position: ${job.jobTitle}</p>
+                    <p>Description: ${truncatedDescription}${moreDescription ? `<span id="moreDescription_${job.id}" style="display:none;"> ${moreDescription}</span> <a href="#" onclick="toggleDescription('moreDescription_${job.id}')"> More</a>` : ''}</p>
+                    <p>Skills: ${job.skills}</p>
+                    <hr>
                     `;
                 });
+                
             });
     };
 
@@ -241,3 +258,8 @@
     updateMap();
 
 })();
+// Function to toggle description visibility
+function toggleDescription(id) {
+    const moreDescription = document.getElementById(id);
+    moreDescription.style.display = moreDescription.style.display === "none" ? "inline" : "none";
+}
