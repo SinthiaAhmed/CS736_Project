@@ -79,7 +79,7 @@
         .append("path")
         .attr("d", path)
         .attr("id", (d) => d.properties.name.replace(/\s/g, ""))
-        .style("fill", "lightgray")
+        .style("fill", "cornsilk")
         .style("stroke", "darkgray") // Border color
         .style("stroke-width", 1); // Border width;
 
