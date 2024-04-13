@@ -79,7 +79,7 @@
 
         // Filter jobsData based on selected department and employment type
         let filteredJobsData;
-    
+
         if (selectedDepartment === "All" && selectedEmploymentType === "All") {
             // If both department and employment type are "All", return all jobs
             filteredJobsData = jobsData;
@@ -97,10 +97,12 @@
             } else {
                 filteredJobsData = jobsData.filter(job => job.employmentType === selectedEmploymentType);
             }
-        }        
+        }
         console.log("filteredJobsData", filteredJobsData);
 
-
+        const colorScale = d3.scaleOrdinal()
+            .domain(departments) // Use the list of departments as the domain for the color scale
+            .range(d3.schemeCategory10); // Use D3's categorical color scheme for colors
 
         // Iterate through each state
         svg.append("g")
@@ -124,7 +126,8 @@
                 // Use square root of count for balanced radius
                 return Math.sqrt(d.employmentType.count) * 2;
             })
-            .style("fill", "steelblue") // You can set different colors for each employment type
+            // .style("fill", "steelblue") // You can set different colors for each employment type
+            .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
     };
 
