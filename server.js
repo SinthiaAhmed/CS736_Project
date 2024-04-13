@@ -96,6 +96,10 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           state: { $first: "$state" }, // Retrieve the state
           department: { $first: "$department" }, // Retrieve the department
           employmentType: { $first: "$employmenttype_jobstatus" }, // Retrieve the employment type
+          company: { $first: "$company" }, // Retrieve the company
+          skills: { $first: "$skills" }, // Retrieve the skills
+          jobDescription: { $first: "$jobdescription" }, // Retrieve the job description
+          jobTitle: { $first: "$jobtitle" }, // Retrieve the job title
           count: { $sum: 1 } // Count occurrences for each state, department, and employment type combination
         }
       },
@@ -108,6 +112,10 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           employmentType: {
             $replaceAll: { input: "$_id.employmentType", find: " ", replacement: "_" }
           },
+          company: 1,
+          skills: 1,
+          jobDescription: 1,
+          jobTitle: 1,
           count: 1
         }
       }
@@ -117,6 +125,7 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // Start the server
 const port = process.env.PORT || 3000;

@@ -164,6 +164,7 @@
             .range(d3.schemeCategory10); // Use D3's categorical color scheme for colors
 
         // Iterate through each state
+        // Append circles to the SVG
         svg.append("g")
             .attr("class", "bubble")
             .selectAll("circle")
@@ -188,7 +189,19 @@
                 return Math.sqrt(d.employmentType.count) * 4;
             })
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
-            .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
+            .style("opacity", 0.5) // Set opacity to distinguish overlapping bubbles
+            .on("click", (d, event ) => {
+                console.log(d);
+                // Handle click event on circles
+                // Extract relevant details from 'd' and display them in a separate container
+                const detailsContainer = document.getElementById("detailsContainer");
+                detailsContainer.innerHTML = `
+                 <h2>${d.employmentType.department}</h2>
+                 <p>State: ${d.state.properties.name}</p>
+                 <p>Employment Type: ${d.employmentType.employmentType}</p>
+                 <p> ${d}</p>
+             `;
+            });
     };
 
 
