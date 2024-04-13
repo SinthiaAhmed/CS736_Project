@@ -126,7 +126,7 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
   }
 });
 
-// Endpoint to fetch skills data for each department
+// Endpoint to fetch unique skills data for each department
 app.get("/departments/skills", async (req, res) => {
   try {
     const jobsData = await Job.aggregate([
@@ -138,6 +138,13 @@ app.get("/departments/skills", async (req, res) => {
           _id: "$department",
           skills: { $addToSet: "$skills" } // Collect unique skills for each department
         }
+      },
+      {
+        $project: {
+          _id: 0, // Exclude the default _id field
+          department: "$_id", // Rename _id to department
+          skills: 1 // Include the skills array
+        }
       }
     ]);
     res.json(jobsData);
@@ -145,6 +152,7 @@ app.get("/departments/skills", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 
