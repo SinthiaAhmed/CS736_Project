@@ -3,6 +3,63 @@
     const us = await d3.json("https://d3js.org/us-10m.v2.json");
     const data = topojson.feature(us, us.objects.states).features;
 
+    // Map of state names to their abbreviations
+    const stateAbbreviations = {
+        "Texas": "TX",
+        "Arizona": "AZ",
+        "Louisiana": "LA",
+        "Idaho": "ID",
+        "Minnesota": "MN",
+        "North Dakota": "ND",
+        "South Dakota": "SD",
+        "New York": "NY",
+        "Alaska": "AK",
+        "Georgia": "GA",
+        "Indiana": "IN",
+        "Michigan": "MI",
+        "Mississippi": "MS",
+        "Ohio": "OH",
+        "Nebraska": "NE",
+        "Colorado": "CO",
+        "Maryland": "MD",
+        "Kansas": "KS",
+        "Illinois": "IL",
+        "Wisconsin": "WI",
+        "California": "CA",
+        "Iowa": "IA",
+        "Pennsylvania": "PA",
+        "Montana": "MT",
+        "Missouri": "MO",
+        "Florida": "FL",
+        "Kentucky": "KY",
+        "Maine": "ME",
+        "Utah": "UT",
+        "Oklahoma": "OK",
+        "Tennessee": "TN",
+        "Oregon": "OR",
+        "West Virginia": "WV",
+        "Arkansas": "AR",
+        "Washington": "WA",
+        "North Carolina": "NC",
+        "Virginia": "VA",
+        "Wyoming": "WY",
+        "Alabama": "AL",
+        "South Carolina": "SC",
+        "New Mexico": "NM",
+        "New Hampshire": "NH",
+        "Vermont": "VT",
+        "Nevada": "NV",
+        "Hawaii": "HI",
+        "Massachusetts": "MA",
+        "Rhode Island": "RI",
+        "New Jersey": "NJ",
+        "Delaware": "DE",
+        "Connecticut": "CT",
+        "District of Columbia": "DC"
+    };
+
+
+
     // Step 2. Draw the SVG.
     const width = 960;
     const height = 600;
@@ -33,7 +90,10 @@
         .append("text")
         .attr("x", (d) => path.centroid(d)[0])
         .attr("y", (d) => path.centroid(d)[1])
-        .text((d) => d.properties.name.substring(0, 2));
+        .text((d) => {
+            const stateName = d.properties.name;
+            return stateAbbreviations[stateName] || stateName.substring(0, 2);
+        });
 
     // Step 3. Add filters for department, employment type, and skill
     const departments = await d3.json("http://localhost:3000/departments");
@@ -98,7 +158,6 @@
                 filteredJobsData = jobsData.filter(job => job.employmentType === selectedEmploymentType);
             }
         }
-        // console.log("filteredJobsData", filteredJobsData);
 
         const colorScale = d3.scaleOrdinal()
             .domain(departments) // Use the list of departments as the domain for the color scale
@@ -112,11 +171,11 @@
             .enter()
             .selectAll("circle") // Nest selection for each state
             .data((d) => {
-                console.log(d.properties.name, d.properties.name.substring(0, 2).toUpperCase());
+                const stateName = d.properties.name;
+                const stateAbbreviation = stateAbbreviations[stateName];
                 // Find the corresponding data points for the current state based on state abbreviation
-                const stateData = filteredJobsData.filter((job) => job.state === d.properties.name.substring(0, 2).toUpperCase());
-                
-                // console.log("stateData", stateData);
+                const stateData = filteredJobsData.filter((job) => job.state === stateAbbreviation);
+
                 return stateData.map((employmentType) => ({ state: d, employmentType: employmentType }));
             })
             .enter()
@@ -128,7 +187,6 @@
                 // Use square root of count for balanced radius
                 return Math.sqrt(d.employmentType.count) * 5;
             })
-            // .style("fill", "steelblue") // You can set different colors for each employment type
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
     };
