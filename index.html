@@ -14,21 +14,31 @@
 
 <body>
   <div class="container">
-    <div class="col-lg-12 mt-4">
-      <div class="filters my-4">
-        <label for="departmentDropdown">Department:</label>
-        <select id="departmentDropdown"></select>
+    <div class="row">
+      <div class="col-lg-12 mt-4">
+        <div class="filters my-4">
+          <label for="departmentDropdown">Department:</label>
+          <select id="departmentDropdown"></select>
 
-        <label for="employmentTypeDropdown">Employment Type:</label>
-        <select id="employmentTypeDropdown"></select>
+          <label for="employmentTypeDropdown">Employment Type:</label>
+          <select id="employmentTypeDropdown"></select>
+        </div>
+
+        <div id="mapContainer"></div>
       </div>
+      <div class="row">
+        <div class="col-lg-8 mt-4">
+        <div id="detailsContainer">
+          <!-- Details of clicked circle will be displayed here -->
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4">
+        <div id="word-cloud">
+          
+        </div>
 
-      <div id="mapContainer"></div>
-
-      <div id="detailsContainer">
-        <!-- Details of clicked circle will be displayed here -->
-    </div>
-    
+      </div>
+      </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
