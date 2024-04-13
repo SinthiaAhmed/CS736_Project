@@ -8,22 +8,36 @@
   <title>Job data on US Map with Bubbles</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <!-- Include D3.js library -->
+ <link rel="stylesheet" href="assets/style.css">
+    <!-- Include D3.js library -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
   <div class="container">
-    <div class="col-lg-12 mt-4">
-      <div class="filters my-4">
-        <label for="departmentDropdown">Department:</label>
-        <select id="departmentDropdown"></select>
+    <div class="row">
+      <div class="col-lg-12 mt-2">
+        <div class="filters my-4">
+          <label for="departmentDropdown">Department:</label>
+          <select id="departmentDropdown"></select>
 
-        <label for="employmentTypeDropdown">Employment Type:</label>
-        <select id="employmentTypeDropdown"></select>
+          <label for="employmentTypeDropdown">Employment Type:</label>
+          <select id="employmentTypeDropdown"></select>
+        </div>
+
+        <div id="mapContainer"></div>
       </div>
-
-      <div id="mapContainer"></div>
+      <div class="row">
+        <div class="col-lg-8 mt-4">
+        <div id="detailsContainer">
+          <!-- Details of clicked circle will be displayed here -->
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4">
+        <canvas  id="wordCloud">
+        </canvas >
+      </div>
+      </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -32,8 +46,10 @@
   <!-- Step 1. Load D3 and topoJSON libraries -->
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
+ 
   <!-- Include your JavaScript file -->
-  <script src="newscript.js"></script>
+  <script src="assets/script.js"></script>
+  <script src="assets/wordcloud.js"></script>
 
 </body>
 

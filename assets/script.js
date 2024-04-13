@@ -164,6 +164,7 @@
             .range(d3.schemeCategory10); // Use D3's categorical color scheme for colors
 
         // Iterate through each state
+        // Append circles to the SVG
         svg.append("g")
             .attr("class", "bubble")
             .selectAll("circle")
@@ -185,10 +186,56 @@
             })
             .attr("r", (d) => {
                 // Use square root of count for balanced radius
-                return Math.sqrt(d.employmentType.count) * 5;
+                return Math.sqrt(d.employmentType.count) * 4;
             })
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
-            .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
+            .style("opacity", 0.5) // Set opacity to distinguish overlapping bubbles
+            .style("cursor", "pointer") // Change cursor to pointer on hover
+
+            .on("click", async (d) => {
+                // Handle click event on circles
+                const stateName = d.state.properties.name;
+                const stateAbbreviation = stateAbbreviations[stateName];
+
+
+                // Fetch all jobs data for the clicked state
+                let stateJobsData = jobsData.filter(job => job.state === stateAbbreviation);
+
+                // If both department and employment type are selected, filter jobs by both criteria
+                if (selectedDepartment !== "All" || selectedEmploymentType !== "All") {
+                    stateJobsData = stateJobsData.filter(job => job.department.replace(/\s|&/g, "") === selectedDepartment && job.employmentType === selectedEmploymentType);
+                }
+
+                // Access the properties of the clicked circle
+                const jobData = d.employmentType; // This will contain the properties of the clicked circle
+
+                // Display details of the clicked job
+                const detailsContainer = document.getElementById("detailsContainer");
+                detailsContainer.innerHTML = `<h2>${jobData.department} Job in ${stateName}</h2>`;
+                detailsContainer.innerHTML += `
+                    <p>Department: ${jobData.department}</p>
+                    <p>Employment Type: ${jobData.employmentType}</p>
+                    <p>Position: ${jobData.jobTitle}</p>
+                    <p>Description: <span id="jobDescription">${truncateDescription(jobData.jobDescription)}</span></p>
+                    <button onclick="toggleDescription('jobDescription', { department: '${jobData.department}', employmentType: '${jobData.employmentType}', jobTitle: '${jobData.jobTitle}', jobDescription: '${jobData.jobDescription.replace(/'/g, "\\'")}', skills: '${jobData.skills}' })">View more</button>
+<p>Skills: ${jobData.skills}</p>
+                    <hr>
+        `;
+                // Example of how to use the function
+
+                // const departmentSkillsData = await fetchDepartmentSkillsData(jobData.department);
+                const departmentSkillsData = await d3.json(`http://localhost:3000/departments/mostCommonSkills`);
+                // console.log("Print", jobData.department.replace(/\s|&/g, ""), departmentSkillsData);
+
+                departmentSkillsData.forEach(department => {
+                    if (department.department.replace(/\s|&/g, "") === jobData.department.replace(/\s|&/g, "")) {
+
+                        // Match found,Generate and display the word cloud
+                        generateWordCloud(department.mostCommonSkills);
+                    }
+                });
+
+            });
     };
 
 
@@ -220,3 +267,29 @@
     updateMap();
 
 })();
+// Function to truncate description to 100 words
+function truncateDescription(description) {
+    const words = description.split(" ");
+    if (words.length > 100) {
+        return words.slice(0, 100).join(" ") + "...";
+    } else {
+        return description;
+    }
+}
+// Function to toggle description visibility
+function toggleDescription(id, jobData) {
+    const description = document.getElementById(id);
+    const button = description.nextElementSibling;
+    if (description.dataset.fullText === "true") {
+        // Description is already expanded, truncate it
+        description.innerText = truncateDescription(description.innerText);
+        button.innerText = "View more";
+        description.dataset.fullText = "false";
+    } else {
+        // Description is truncated, show full text
+        description.innerText = jobData.jobDescription;
+        button.innerText = "View less";
+        description.dataset.fullText = "true";
+    }
+}
+

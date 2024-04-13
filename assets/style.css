@@ -1,0 +1,17 @@
+
+.filters {
+  width: 100%;
+  background-color: #f8f8f8;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(223, 223, 223, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+path {
+  fill: none;
+  stroke: #000;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
