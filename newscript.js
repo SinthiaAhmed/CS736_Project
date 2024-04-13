@@ -124,7 +124,7 @@
             })
             .attr("r", (d) => {
                 // Use square root of count for balanced radius
-                return Math.sqrt(d.employmentType.count) * 2;
+                return Math.sqrt(d.employmentType.count) * 5;
             })
             // .style("fill", "steelblue") // You can set different colors for each employment type
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
