@@ -191,17 +191,24 @@
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5) // Set opacity to distinguish overlapping bubbles
             .style("cursor", "pointer") // Change cursor to pointer on hover
-            .on("click", (d, event ) => {
-                console.log(d);
+            .on("click", async (d) => {
                 // Handle click event on circles
-                // Extract relevant details from 'd' and display them in a separate container
+                const stateName = d.state.properties.name;
+                const stateAbbreviation = stateAbbreviations[stateName];
+    
+                // Fetch all jobs data for the clicked state
+                const stateJobsData = jobsData.filter(job => job.state === stateAbbreviation);
+    
+                // Display all jobs data for the clicked state
                 const detailsContainer = document.getElementById("detailsContainer");
-                detailsContainer.innerHTML = `
-                 <h2>${d.employmentType.department}</h2>
-                 <p>State: ${d.state.properties.name}</p>
-                 <p>Employment Type: ${d.employmentType.employmentType}</p>
-                 <p> ${d}</p>
-             `;
+                detailsContainer.innerHTML = `<h2>All Jobs in ${stateName}</h2>`;
+                stateJobsData.forEach(job => {
+                    detailsContainer.innerHTML += `
+                        <p>Department: ${job.department}</p>
+                        <p>Employment Type: ${job.employmentType}</p>
+                        <hr>
+                    `;
+                });
             });
     };
 
