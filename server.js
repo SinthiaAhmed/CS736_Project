@@ -126,6 +126,27 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
   }
 });
 
+// Endpoint to fetch skills data for each department
+app.get("/departments/skills", async (req, res) => {
+  try {
+    const jobsData = await Job.aggregate([
+      {
+        $unwind: "$skills" // Unwind the skills array
+      },
+      {
+        $group: {
+          _id: "$department",
+          skills: { $addToSet: "$skills" } // Collect unique skills for each department
+        }
+      }
+    ]);
+    res.json(jobsData);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 
 // Start the server
 const port = process.env.PORT || 3000;
