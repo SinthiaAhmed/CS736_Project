@@ -185,7 +185,7 @@
             })
             .attr("r", (d) => {
                 // Use square root of count for balanced radius
-                return Math.sqrt(d.employmentType.count) * 5;
+                return Math.sqrt(d.employmentType.count) * 4;
             })
             .style("fill", (d) => colorScale(d.employmentType.department)) // Assign color based on department
             .style("opacity", 0.5); // Set opacity to distinguish overlapping bubbles
