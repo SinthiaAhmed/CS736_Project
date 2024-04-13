@@ -210,7 +210,7 @@
 
                  // Display all jobs data for the clicked state
             const detailsContainer = document.getElementById("detailsContainer");
-            detailsContainer.innerHTML = `<h2>All Jobs in ${stateName}</h2>`;
+            detailsContainer.innerHTML = `<h2>${selectedDepartment} Jobs in ${stateName}</h2>`;
             stateJobsData.forEach(job => {
                 const truncatedDescription = job.jobDescription.split(/\s+/).slice(0, 100).join(" "); // Truncate description to 100 words
                 const moreDescription = job.jobDescription.split(/\s+/).slice(100).join(" "); // Get remaining description
