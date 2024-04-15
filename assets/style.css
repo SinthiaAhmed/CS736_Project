@@ -38,3 +38,17 @@ path {
   stroke-linejoin: round;
   stroke-linecap: round;
 }
+
+.w-70{
+  width: 70%;
+  float: right;
+}
+
+label{
+  line-height: 2;
+}
+button{
+  border: none;
+  display: inline;
+  margin-bottom: 5px;
+}
