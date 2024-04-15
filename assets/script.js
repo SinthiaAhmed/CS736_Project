@@ -211,7 +211,7 @@
 
               // Display details of the clicked job
               const detailsContainer = document.getElementById("detailsContainer");
-              detailsContainer.innerHTML = `<h2>${jobData.department} Job in ${stateName}</h2>`;
+              detailsContainer.innerHTML = `<h2>${jobData.department} Job in ${stateName}</h2><br>`;
               detailsContainer.innerHTML += `
                   <p>Department: ${jobData.department}</p>
                   <p>Employment Type: ${jobData.employmentType}</p>
