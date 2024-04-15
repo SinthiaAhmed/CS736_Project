@@ -121,6 +121,7 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           company: { $first: "$company" }, // Retrieve the company
           skills: { $first: "$skills" }, // Retrieve the skills
           jobDescription: { $first: "$jobdescription" }, // Retrieve the job description
+          location: { $first: "$joblocation_address" },// Retrieve the job location
           jobTitle: { $first: "$jobtitle" }, // Retrieve the job title
           count: { $sum: 1 }, // Count occurrences for each state, department, and employment type combination
         },
@@ -141,6 +142,7 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           company: 1,
           skills: 1,
           jobDescription: 1,
+          location: 1,
           jobTitle: 1,
           count: 1,
         },
