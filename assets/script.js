@@ -236,6 +236,7 @@
         detailsContainer.innerHTML = `<h2>${jobData.department} Job in ${stateName}</h2>`;
         detailsContainer.innerHTML += `
                   <h5>Position: ${jobData.jobTitle}</h5>
+                  <p>Company: ${jobData.company}</p>
                   <p>Employment Type: ${jobData.employmentType}</p>
                   <p>Location: <i class="fas fa-map-marker-alt"></i> ${
                     jobData.location
@@ -252,7 +253,7 @@
         }', jobDescription: '${jobData.jobDescription.replace(
           /'/g,
           "\\'"
-        )}', skills: '${jobData.skills}' })">View more</button>
+        )} })">View more</button>
                   <hr>
       `;
         // Example of how to use the function
