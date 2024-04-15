@@ -47,3 +47,8 @@ path {
 label{
   line-height: 2;
 }
+button{
+  border: none;
+  display: inline;
+  margin-bottom: 5px;
+}

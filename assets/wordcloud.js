@@ -11,7 +11,6 @@ async function generateWordCloud(mostCommonSkills) {
 
   canvas.width = 400;
   canvas.height = 500;
-
   // Find the word with the highest count (optional, for centering)
   const highestCountWord = mostCommonSkills.reduce((maxWord, currentWord) =>
     currentWord.count > maxWord.count ? currentWord : maxWord
