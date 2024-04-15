@@ -34,7 +34,9 @@ app.get("/departments", async (req, res) => {
 app.get("/employmenttypes", async (req, res) => {
   try {
     const employmentTypes = await Job.distinct("employmenttype_jobstatus");
-    const formattedTypes = employmentTypes.map(type => type.replace(/\s+/g, '_'));
+    const formattedTypes = employmentTypes.map((type) =>
+      type.replace(/\s+/g, "_")
+    );
     res.json(formattedTypes);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -51,14 +53,22 @@ app.get("/jobs/groupedEmploymentType", async (req, res) => {
       {
         $group: {
           _id: {
-            id: { $concat: [randomId.toString(), "-", timestamp.toString(), "-", "$state"] },
+            id: {
+              $concat: [
+                randomId.toString(),
+                "-",
+                timestamp.toString(),
+                "-",
+                "$state",
+              ],
+            },
             state: "$state",
-            employmentType: "$employmenttype_jobstatus"
+            employmentType: "$employmenttype_jobstatus",
           },
           state: { $first: "$state" }, // Retrieve the state
           employmentType: { $first: "$employmenttype_jobstatus" }, // Retrieve the employment type
-          count: { $sum: 1 } // Count occurrences for each state and employment type combination
-        }
+          count: { $sum: 1 }, // Count occurrences for each state and employment type combination
+        },
       },
       {
         $project: {
@@ -66,11 +76,15 @@ app.get("/jobs/groupedEmploymentType", async (req, res) => {
           id: "$_id.id",
           state: 1,
           employmentType: {
-            $replaceAll: { input: "$_id.employmentType", find: " ", replacement: "_" }
+            $replaceAll: {
+              input: "$_id.employmentType",
+              find: " ",
+              replacement: "_",
+            },
           },
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     ]);
     res.json(jobsData);
   } catch (err) {
@@ -88,10 +102,18 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
       {
         $group: {
           _id: {
-            id: { $concat: [randomId.toString(), "-", timestamp.toString(), "-", "$state"] },
+            id: {
+              $concat: [
+                randomId.toString(),
+                "-",
+                timestamp.toString(),
+                "-",
+                "$state",
+              ],
+            },
             state: "$state",
             department: "$department",
-            employmentType: "$employmenttype_jobstatus"
+            employmentType: "$employmenttype_jobstatus",
           },
           state: { $first: "$state" }, // Retrieve the state
           department: { $first: "$department" }, // Retrieve the department
@@ -100,8 +122,8 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           skills: { $first: "$skills" }, // Retrieve the skills
           jobDescription: { $first: "$jobdescription" }, // Retrieve the job description
           jobTitle: { $first: "$jobtitle" }, // Retrieve the job title
-          count: { $sum: 1 } // Count occurrences for each state, department, and employment type combination
-        }
+          count: { $sum: 1 }, // Count occurrences for each state, department, and employment type combination
+        },
       },
       {
         $project: {
@@ -110,15 +132,19 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           state: 1,
           department: 1,
           employmentType: {
-            $replaceAll: { input: "$_id.employmentType", find: " ", replacement: "_" }
+            $replaceAll: {
+              input: "$_id.employmentType",
+              find: " ",
+              replacement: "_",
+            },
           },
           company: 1,
           skills: 1,
           jobDescription: 1,
           jobTitle: 1,
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     ]);
     res.json(jobsData);
   } catch (err) {
@@ -131,21 +157,21 @@ app.get("/departments/skills", async (req, res) => {
   try {
     const jobsData = await Job.aggregate([
       {
-        $unwind: "$skills" // Unwind the skills array
+        $unwind: "$skills", // Unwind the skills array
       },
       {
         $group: {
           _id: "$department",
-          skills: { $addToSet: "$skills" } // Collect unique skills for each department
-        }
+          skills: { $addToSet: "$skills" }, // Collect unique skills for each department
+        },
       },
       {
         $project: {
           _id: 0, // Exclude the default _id field
           department: "$_id", // Rename _id to department
-          skills: 1 // Include the skills array
-        }
-      }
+          skills: 1, // Include the skills array
+        },
+      },
     ]);
     res.json(jobsData);
   } catch (err) {
@@ -153,38 +179,37 @@ app.get("/departments/skills", async (req, res) => {
   }
 });
 
-
-  // .replace(/\s|&/g, "")
+// .replace(/\s|&/g, "")
 // Endpoint to fetch the most common skills for each department
 app.get("/departments/mostcommonskills", async (req, res) => {
   console.log("req", req);
   try {
     const skillsData = await Job.aggregate([
       {
-        $unwind: "$skills" // Unwind the skills array
+        $unwind: "$skills", // Unwind the skills array
       },
       {
         $group: {
           _id: { department: "$department", skill: "$skills" }, // Group by department and skill
-          count: { $sum: 1 } // Count occurrences of each skill in the department
-        }
+          count: { $sum: 1 }, // Count occurrences of each skill in the department
+        },
       },
       {
-        $sort: { count: -1 } // Sort by count in descending order
+        $sort: { count: -1 }, // Sort by count in descending order
       },
       {
         $group: {
           _id: "$_id.department", // Group by department
-          mostCommonSkills: { $push: { skill: "$_id.skill", count: "$count" } } // Push the most common skills into an array
-        }
+          mostCommonSkills: { $push: { skill: "$_id.skill", count: "$count" } }, // Push the most common skills into an array
+        },
       },
       {
         $project: {
           _id: 0, // Exclude the default _id field
           department: "$_id", // Rename _id to department
-          mostCommonSkills: { $slice: ["$mostCommonSkills", 5] } // Limit to the top 5 most common skills
-        }
-      }
+          mostCommonSkills: { $slice: ["$mostCommonSkills", 5] }, // Limit to the top 5 most common skills
+        },
+      },
     ]);
 
     res.json(skillsData);
@@ -192,11 +217,6 @@ app.get("/departments/mostcommonskills", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-
-
-
-
 
 // Start the server
 const port = process.env.PORT || 3000;
