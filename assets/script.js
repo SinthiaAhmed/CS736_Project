@@ -2,6 +2,8 @@
   // Step 1. Load the US map data.
   const us = await d3.json("https://d3js.org/us-10m.v2.json");
   const data = topojson.feature(us, us.objects.states).features;
+  const detailsSection = document.getElementById("detailsSection");
+    
 
   // Map of state names to their abbreviations
   const stateAbbreviations = {
@@ -131,6 +133,10 @@
     const selectedEmploymentType =
       employmentTypeDropdown.property("value") || "All"; // Get the selected employment type
 
+
+    detailsSection.classList.add("d-none");
+
+
     // Fetch data based on selected department and employment type
     jobsData = await d3.json(
       `http://localhost:3000/jobs/groupedDepartments?department=${selectedDepartment}&employmentType=${selectedEmploymentType}`
@@ -230,9 +236,11 @@
 
         // Access the properties of the clicked circle
         const jobData = d.employmentType; // This will contain the properties of the clicked circle
-
+        detailsSection.classList.remove("d-none");
         // Display details of the clicked job
         const detailsContainer = document.getElementById("detailsContainer");
+        detailsContainer.innerHTML = '';
+
         detailsContainer.innerHTML = `<h2>${jobData.department} Job in ${stateName}</h2>`;
         detailsContainer.innerHTML += `
                   <h5>Position: ${jobData.jobTitle}</h5>
