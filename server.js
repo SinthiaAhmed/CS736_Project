@@ -112,10 +112,12 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
               ],
             },
             state: "$state",
+            city: "$city",
             department: "$department",
             employmentType: "$employmenttype_jobstatus",
           },
           state: { $first: "$state" }, // Retrieve the state
+          city: { $first: "$city" }, // Retrieve the state
           department: { $first: "$department" }, // Retrieve the department
           employmentType: { $first: "$employmenttype_jobstatus" }, // Retrieve the employment type
           company: { $first: "$company" }, // Retrieve the company
@@ -130,6 +132,7 @@ app.get("/jobs/groupedDepartments", async (req, res) => {
           _id: 0, // Exclude the default _id field
           id: "$_id.id",
           state: 1,
+          city: 1,
           department: 1,
           employmentType: {
             $replaceAll: {
